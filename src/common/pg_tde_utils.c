@@ -25,12 +25,13 @@
 #include "fmgr.h"
 #include "keyring/keyring_curl.h"
 #include "utils/builtins.h"
+#include "pg_tde_defs.h"
 #include "unistd.h"
 
 Oid
 get_tde_table_am_oid(void)
 {
-    return get_table_am_oid("pg_tde", false);
+    return get_table_am_oid(pg_tde_access_method_name(), false);
 }
 
 /*

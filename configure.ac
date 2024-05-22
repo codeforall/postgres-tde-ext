@@ -3,6 +3,7 @@
 
 AC_INIT([pg_tde], [1.0.0-alpha], [https://github.com/Percona-Lab/pg_tde/issues], [pg_tde])
 
+AC_DEFINE_UNQUOTED([TDE_ACCESS_METHOD_NAME], [pg_tde_full], [Table access method name created by the extension])
 AC_CANONICAL_HOST
 
 # REQUIRE_LIB(name,lib,package,testfn,test_header_dir,test_include.h)
@@ -42,6 +43,26 @@ AC_DEFUN([REQUIRE_LIB], [ {
 		AC_MSG_ERROR([$1 was not found, try specifying --with-$1])
 	])
 } ] )
+
+dnl
+dnl SQL Preprocessor
+dnl
+AC_PATH_PROG([CPPBIN], [cpp], [])
+if test "x$CPPBIN" != "x"; then
+SQLPP="${CPPBIN} -traditional-cpp -w -P -Upixel -Ubool"
+else
+AC_PATH_PROG([GPP], [gpp_], [])
+if test "x$GPP" != "x"; then
+	SQLPP="${GPP} -C -s \'" dnl Use better string support
+else
+	if test "x${CPP}" != "x"; then
+	SQLPP="${CPP} -traditional-cpp"
+	else
+		AC_MSG_ERROR([Required "cpp" command not found])
+	fi
+fi
+fi
+AC_SUBST([SQLPP])
 
  AC_CONFIG_HEADERS(src/include/config.h)
  

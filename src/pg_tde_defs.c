@@ -16,6 +16,9 @@
 #include "config.h"
 #include "pg_tde_defs.h"
 
+#define QU(x) #x
+#define QUH(x) QU(x)
+
 
 /* Returns package version */
 const char*
@@ -33,4 +36,10 @@ const char*
 pg_tde_package_version(void)
 {
 	return PACKAGE_VERSION;
+}
+
+const char*
+pg_tde_access_method_name(void)
+{
+	return QUH(TDE_ACCESS_METHOD_NAME);
 }

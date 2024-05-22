@@ -9,6 +9,8 @@ conf_data.set_quoted('PACKAGE_BUGREPORT', 'https://github.com/Percona-Lab/pg_tde
 conf_data.set_quoted('PACKAGE_VERSION', pg_tde_version)
 conf_data.set_quoted('PACKAGE_STRING', 'pg_tde ' + pg_tde_version)
 conf_data.set_quoted('PACKAGE_TARNAME', 'pg_tde')
+conf_data.set('TDE_ACCESS_METHOD_NAME', 'pg_tde_full')
+
 
 configure_file(output : 'config.h',
                configuration : conf_data)

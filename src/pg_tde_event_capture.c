@@ -21,6 +21,7 @@
 #include "commands/event_trigger.h"
 #include "common/pg_tde_utils.h"
 #include "pg_tde_event_capture.h"
+#include "pg_tde_defs.h"
 
 /* Global variable that gets set at ddl start and cleard out at ddl end*/
 TdeCreateEvent tdeCurrentCreateEvent = {.relation = NULL};
@@ -55,6 +56,7 @@ pg_tde_ddl_command_start_capture(PG_FUNCTION_ARGS)
 	EventTriggerData *trigdata;
 	Node *parsetree;
 
+elog(LOG,"******** %s *********",pg_tde_access_method_name());
 	/* Ensure this function is being called as an event trigger */
 	if (!CALLED_AS_EVENT_TRIGGER(fcinfo)) /* internal error */
 		ereport(ERROR,
@@ -63,7 +65,7 @@ pg_tde_ddl_command_start_capture(PG_FUNCTION_ARGS)
 	trigdata = (EventTriggerData *)fcinfo->context;
 	parsetree = trigdata->parsetree;
 
-	elog(DEBUG2, "EVENT TRIGGER (%s) %s", trigdata->event, nodeToString(parsetree));
+	elog(LOG, "EVENT TRIGGER (%s) %s", trigdata->event, nodeToString(parsetree));
     reset_current_tde_create_event();
 
 	if (IsA(parsetree, IndexStmt))
@@ -104,7 +106,7 @@ pg_tde_ddl_command_start_capture(PG_FUNCTION_ARGS)
         tdeCurrentCreateEvent.relation = stmt->relation;
 
 		elog(DEBUG1, "CREATING TABLE %s Using Access Method %s", stmt->relation->relname, stmt->accessMethod);
-		if (stmt->accessMethod && !strcmp(stmt->accessMethod,"pg_tde"))
+		if (stmt->accessMethod && !strcmp(stmt->accessMethod,pg_tde_access_method_name()))
 		{
             tdeCurrentCreateEvent.encryptMode = true;
 		}
@@ -124,7 +126,7 @@ pg_tde_ddl_command_end_capture(PG_FUNCTION_ARGS)
 		ereport(ERROR,
             (errmsg("Function can only be fired by event trigger manager")));
 
-    elog(DEBUG1,"Type:%s EncryptMode:%s, Oid:%d, Relation:%s ",
+    elog(LOG,"Type:%s EncryptMode:%s, Oid:%d, Relation:%s ",
                 (tdeCurrentCreateEvent.eventType == TDE_INDEX_CREATE_EVENT) ?"CREATE INDEX":
                     (tdeCurrentCreateEvent.eventType == TDE_TABLE_CREATE_EVENT) ?"CREATE TABLE":"UNKNOWN",
                 tdeCurrentCreateEvent.encryptMode ?"true":"false",

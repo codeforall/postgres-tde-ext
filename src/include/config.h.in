@@ -55,3 +55,6 @@
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
+
+/* Table access method name created by the extension */
+#undef TDE_ACCESS_METHOD_NAME
